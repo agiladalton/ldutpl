@@ -2,6 +2,7 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 
 import { NavController } from 'ionic-angular';
 import { AlertController } from 'ionic-angular';
+import { ToastController } from 'ionic-angular';
 
 import { Geolocation } from 'ionic-native';
 import { SocialSharing } from 'ionic-native';
@@ -21,7 +22,11 @@ export class PaginaMapa {
   	timerId: any;
   	marcadorPosicion: any
 
-  	constructor(public navCtrl: NavController, private alertCtrl: AlertController) {
+  	constructor(
+  		public navCtrl: NavController, 
+  		private alertCtrl: AlertController,
+  		public toastCtrl: ToastController
+	) {
     	
   	}
 
@@ -168,10 +173,22 @@ export class PaginaMapa {
 	}
 
 	compartirViaEmail() {
+		let toast;
+
 		SocialSharing.canShareViaEmail().then(() => {
-			console.log("Es posible");
+			toast = this.toastCtrl.create({
+		      	message: 'Es posible',
+		      	duration: 3000
+		    });		    
+
+		    toast.present();
 		}).catch(() => {
-			console.log("No es posible");
+			toast = this.toastCtrl.create({
+		      	message: 'No es posible',
+		      	duration: 3000
+		    });
+
+		    toast.present();
 		});
 	}
 
