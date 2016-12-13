@@ -1,0 +1,13 @@
+<ion-content>
+	<div #map id="map"></div>
+	<ion-fab right middle>
+		<button ion-fab mini (click)="cambiarIntervalo()"><ion-icon name="time"></ion-icon></button>
+		<button ion-fab mini color="primary" (click)="compartirViaEmail()"><ion-icon name="share"></ion-icon></button>
+		<button ion-fab mini color="secondary" (click)="ubicarMiPosicion()"><ion-icon name="move"></ion-icon></button>
+	</ion-fab>
+</ion-content>
+
+<ion-footer>
+	<button #iniciar ion-button full (click)="iniciarRecorrido()">Iniciar Recorrido</button>
+	<button #finalizar ion-button full color="danger" hidden (click)="finalizarRecorrido()">Finalizar Recorrido</button>
+</ion-footer>
