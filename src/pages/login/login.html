@@ -4,11 +4,11 @@
 			<img src="img/login.png"/>
 		</ion-item>
 		<ion-item>
-			<ion-input type="text" placeholder="Correo o celular"></ion-input>
+			<ion-input type="text" placeholder="Correo, celular o cédula" [(ngModel)]="usuario" maxlength=45></ion-input>
 		</ion-item>
 
 		<ion-item>
-			<ion-input type="password" placeholder="Contraseña"></ion-input>
+			<ion-input type="password" placeholder="Contraseña" [(ngModel)]="clave" maxlength=45></ion-input>
 		</ion-item>
 	</ion-list>	
 </ion-content>

@@ -1,0 +1,32 @@
+<ion-header>
+  	<ion-navbar>
+    	<ion-title>
+      		Nuevo Recorrido
+    	</ion-title>
+  	</ion-navbar>
+</ion-header>
+
+<ion-content>
+	<ion-list>
+		<ion-item>
+			<ion-label color="primary" stacked>Tipo de Recorrido:</ion-label>
+			<ion-select [(ngModel)]="genero" placeholder="Seleccionar tipo..." cancelText="Cancelar" okText="Hecho">
+				<ion-option value="1" selected=true>Recorrido de bus urbano</ion-option>
+				<ion-option value="2">Recorrido de bus privado</ion-option>
+			</ion-select>
+		</ion-item>
+		<ion-item>
+			<ion-label color="primary" stacked>Título:</ion-label>
+			<ion-input type="text" placeholder="Ingresar titulo del recorrido..." [(ngModel)]="usuario" maxlength=45></ion-input>
+		</ion-item>
+
+		<ion-item>
+			<ion-label color="primary" stacked>Descripción:</ion-label>
+			<ion-textarea placeholder="Ingresar descripción..." [(ngModel)]="clave" maxlength=500></ion-textarea>
+		</ion-item>
+	</ion-list>	
+</ion-content>
+
+<ion-footer>
+	<button ion-button full (click)="iniciarRecorrido()">Iniciar Recorrido</button>
+</ion-footer>
