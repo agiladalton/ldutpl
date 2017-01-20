@@ -21,6 +21,7 @@ export class PaginaLogin {
     usuario: any;
     clave: any;
     SERVICIO_PERSONAS: any;
+    storageLocal: any;
 
     constructor(
         public navCtrl: NavController,
@@ -29,9 +30,10 @@ export class PaginaLogin {
         public http: Http,
         storage: Storage
     ) {
+        this.storageLocal = storage;
         storage.get('SERVICIO_PERSONAS').then((val) => {
            this.SERVICIO_PERSONAS = val;
-        })
+        });
     }
 
     registrar() {
@@ -57,6 +59,7 @@ export class PaginaLogin {
 
                 if (typeof result.success !== 'undefined') {
                     if (result.success) {
+                        this.storageLocal.set('idPersonaLdutpl', result.data.idPersona);
                         this.navCtrl.push(PaginaPrincipal);
                         this.mensajeInformativoEfecto(result.message);
                     } else {

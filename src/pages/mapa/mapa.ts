@@ -22,7 +22,7 @@ declare var google;
 export class PaginaMapa {
 
 	@ViewChild('map') mapElement: ElementRef;
-	@ViewChild('iniciar') btnIniciar;
+	@ViewChild('nuevo') btnNuevo;
 	@ViewChild('finalizar') btnFinalizar;
   	map: any;
   	timerId: any;
@@ -30,6 +30,9 @@ export class PaginaMapa {
   	intervalo: any;
   	estadoInicioRecorrido: any;
   	SERVICIO_POSICION_RECORRIDO: any;
+  	storageLocal: any;
+  	idRecorrido: any;
+  	idPersona: any;
 
   	constructor(
   		public navCtrl: NavController, 
@@ -37,17 +40,26 @@ export class PaginaMapa {
   		public toastCtrl: ToastController,
   		public http: Http,
   		storage: Storage
-	) {
+	) {	
+		this.storageLocal = storage;
 		this.intervalo = 30;
 		this.estadoInicioRecorrido = false;
 
 		storage.get('SERVICIO_POSICION_RECORRIDO').then((val) => {
 	       this.SERVICIO_POSICION_RECORRIDO = val;
-		})
+		});
+
+		storage.get('idPersonaLdutpl').then((val) => {
+	       this.idPersona = val;
+		});
   	}
 
   	ngOnInit(){
 	    this.loadMap();
+
+	    if (typeof this.idRecorrido !== 'undefined') {
+			this.iniciarRecorrido();
+		}
 	}
 	 
 	loadMap(){	 
@@ -130,7 +142,8 @@ export class PaginaMapa {
 			this.agregarMarcadorPersona(latLng);
 
 	        let link = this.SERVICIO_POSICION_RECORRIDO + 'registro';
-	        let data = 'idRecorrido=1&'
+	        let data = 'idRecorrido='+this.idRecorrido+'&'
+	        	+ 'idPersona=' + this.idPersona + '&'
 	        	+ 'fechaHoraEquipo='+new Date().getTime()+ '&'
 	        	+ 'latitud='+pos.coords.latitude+'&'
 	        	+ 'longitud='+pos.coords.longitude+'&'
@@ -166,20 +179,24 @@ export class PaginaMapa {
 	    return new google.maps.LatLng(latitud, longitud);
 	}
 
+	establecerRecorrido(idRecorrido) {
+		this.idRecorrido = idRecorrido;
+	}
+
 	iniciarRecorrido() {
 		this.ubicarMiPosicion();
 		this.timerId = setInterval(() => {
 			this.ubicarMiPosicion();
 		}, 1000 * this.intervalo);
 
-		this.btnIniciar._elementRef.nativeElement.hidden = true;
+		this.btnNuevo._elementRef.nativeElement.hidden = true;
 		this.btnFinalizar._elementRef.nativeElement.hidden = false;
 		this.estadoInicioRecorrido = true;
 	}
 
 	finalizarRecorrido() {
 		clearTimeout(this.timerId);		
-		this.btnIniciar._elementRef.nativeElement.hidden = false;
+		this.btnNuevo._elementRef.nativeElement.hidden = false;
 		this.btnFinalizar._elementRef.nativeElement.hidden = true;
 		this.estadoInicioRecorrido = false;
 	}
@@ -277,7 +294,7 @@ export class PaginaMapa {
 		        	this.intervalo = parseInt(data);
 		        	if (this.estadoInicioRecorrido) {
 		        		this.finalizarRecorrido();
-		        		this.iniciarRecorrido();
+		        		//this.iniciarRecorrido();
 		        	}
 		        }
 			}]

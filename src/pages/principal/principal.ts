@@ -5,9 +5,12 @@ import { PaginaFavoritos } from '../favoritos/favoritos';
 import { PaginaRecorridos } from '../recorridos/recorridos';
 import { PaginaPerfil } from '../perfil/perfil';
 
+import { NavParams } from 'ionic-angular';
+
 @Component({
   templateUrl: 'principal.html'
 })
+
 export class PaginaPrincipal {
 
 	tab1Root: any = PaginaMapa;
@@ -15,8 +18,8 @@ export class PaginaPrincipal {
   	tab3Root: any = PaginaRecorridos;
   	tab4Root: any = PaginaPerfil;
 
-  	constructor() {
-    
+  	constructor(private navParams: NavParams) {
+    	
   	}
 
 }
