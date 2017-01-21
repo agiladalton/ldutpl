@@ -10,6 +10,7 @@ import { PaginaRecorridos } from '../pages/recorridos/recorridos';
 import { PaginaPerfil } from '../pages/perfil/perfil';
 import { PaginaNuevoRecorrido } from '../pages/nuevorecorrido/nuevorecorrido';
 import { Storage } from '@ionic/storage';
+import { LocationTracker } from '../providers/location-tracker';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,7 @@ import { Storage } from '@ionic/storage';
   providers: [{
     provide: ErrorHandler, 
     useClass: IonicErrorHandler
-  }, Storage]
+  }, Storage, LocationTracker]
 })
 
 export class AppModule {
@@ -52,7 +53,7 @@ export class AppModule {
   SERVICIO_PERSONAS: any;
 
   constructor(storage: Storage) {
-    this.SERVICIO_WEB = 'http://localhost:8080/ldutplrest/webresources/';
+    this.SERVICIO_WEB = 'http://karview.kradac.com:8080/ldutplrest/webresources/';
     this.SERVICIO_POSICION_RECORRIDO = this.SERVICIO_WEB + 'ec.edu.utpl.ldutpl.entidades.posicionesrecorridos/';
     this.SERVICIO_PERSONAS = this.SERVICIO_WEB + 'ec.edu.utpl.ldutpl.entidades.personas/';
     this.SERVICIO_RECORRIDOS = this.SERVICIO_WEB + 'ec.edu.utpl.ldutpl.entidades.recorridos/';

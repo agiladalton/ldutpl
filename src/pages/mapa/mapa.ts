@@ -12,6 +12,7 @@ import { Http, Headers, RequestOptions } from '@angular/http';
 import { PaginaNuevoRecorrido } from '../nuevorecorrido/nuevorecorrido';
 
 import { Storage } from '@ionic/storage';
+import { LocationTracker } from '../../providers/location-tracker';
 
 declare var google;
 
@@ -39,7 +40,8 @@ export class PaginaMapa {
   		private alertCtrl: AlertController,
   		public toastCtrl: ToastController,
   		public http: Http,
-  		storage: Storage
+  		storage: Storage,
+  		public locationTracker: LocationTracker
 	) {	
 		this.storageLocal = storage;
 		this.intervalo = 30;
@@ -126,49 +128,47 @@ export class PaginaMapa {
 	}
 
 	ubicarMiPosicion() {
-		Geolocation.getCurrentPosition().then(pos => {
-			let latLng = this.obtenerLatLng(pos.coords.latitude, pos.coords.longitude);
-			let altitud = -1, velocidad = -1;
+		let latitud = this.locationTracker.lat;
+		let longitud = this.locationTracker.lng;
 
-			if (pos.coords.altitude !== null) {
-				altitud = pos.coords.altitude;
-			}
+		let latLng = this.obtenerLatLng(latitud, longitud);
+		let altitud = -1, velocidad = -1;
 
-			if (pos.coords.speed !== null) {
-				velocidad = pos.coords.speed;
-			}
+		/*if (pos.coords.altitude !== null) {
+			altitud = pos.coords.altitude;
+		}
 
-			this.centrarMapa(latLng);
-			this.agregarMarcadorPersona(latLng);
+		if (pos.coords.speed !== null) {
+			velocidad = pos.coords.speed;
+		}*/
 
-	        let link = this.SERVICIO_POSICION_RECORRIDO + 'registro';
-	        let data = 'idRecorrido='+this.idRecorrido+'&'
-	        	+ 'idPersona=' + this.idPersona + '&'
-	        	+ 'fechaHoraEquipo='+new Date().getTime()+ '&'
-	        	+ 'latitud='+pos.coords.latitude+'&'
-	        	+ 'longitud='+pos.coords.longitude+'&'
-	        	+ 'altitud=' + altitud +'&'
-	        	+ 'velocidad=' + velocidad;
+		this.centrarMapa(latLng);
+		this.agregarMarcadorPersona(latLng);
 
-	        let headers = new Headers({
-				'Content-Type': 'application/x-www-form-urlencoded'
-			});
+        let link = this.SERVICIO_POSICION_RECORRIDO + 'registro';
+        let data = 'idRecorrido='+this.idRecorrido+'&'
+        	+ 'idPersona=' + this.idPersona + '&'
+        	+ 'fechaHoraEquipo='+new Date().getTime()+ '&'
+        	+ 'latitud='+latitud+'&'
+        	+ 'longitud='+longitud+'&'
+        	+ 'altitud=' + altitud +'&'
+        	+ 'velocidad=' + velocidad;
 
-			let options = new RequestOptions({
-				headers: headers
-			});
-	        
-	        this.http.post(link, data, options).subscribe(response => {
-				let result = JSON.parse(response['_body']);
+        let headers = new Headers({
+			'Content-Type': 'application/x-www-form-urlencoded'
+		});
 
-				this.mensajeInformativoEfecto(result.message);
-	        }, error => {
-	        	this.mensajeInformativoEfecto('Problema de conexión.');
-	        });
-		}, (err) => {
-			this.finalizarRecorrido();
-	      	this.mensajeAlerta(err.message);
-	    });
+		let options = new RequestOptions({
+			headers: headers
+		});
+        
+        this.http.post(link, data, options).subscribe(response => {
+			let result = JSON.parse(response['_body']);
+
+			this.mensajeInformativoEfecto(result.message);
+        }, error => {
+        	this.mensajeInformativoEfecto('Problema de conexión.');
+        });
 	}
 
 	centrarMapa(latLng) {
@@ -184,7 +184,7 @@ export class PaginaMapa {
 	}
 
 	iniciarRecorrido() {
-		this.ubicarMiPosicion();
+		//this.ubicarMiPosicion();
 		this.timerId = setInterval(() => {
 			this.ubicarMiPosicion();
 		}, 1000 * this.intervalo);
@@ -195,6 +195,7 @@ export class PaginaMapa {
 	}
 
 	finalizarRecorrido() {
+		this.stop();
 		clearTimeout(this.timerId);		
 		this.btnNuevo._elementRef.nativeElement.hidden = false;
 		this.btnFinalizar._elementRef.nativeElement.hidden = true;
@@ -304,6 +305,7 @@ export class PaginaMapa {
 	}
 
 	nuevoRecorrido() {
+		this.start();
 		this.navCtrl.push(PaginaNuevoRecorrido);
 	}
 
@@ -333,5 +335,13 @@ export class PaginaMapa {
 		});
 		alert.present();
 	}
+
+	start() {
+        this.locationTracker.startTracking();
+    }
+     
+    stop() {
+        this.locationTracker.stopTracking();
+    }
 
 }
