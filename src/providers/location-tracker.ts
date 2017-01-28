@@ -17,7 +17,7 @@ export class LocationTracker {
 
 
 	constructor(public http: Http, public zone: NgZone) {
-    	console.log('Hello LocationTracker Provider');
+    	//console.log('Hello LocationTracker Provider');
   	}
 
   	startTracking() {

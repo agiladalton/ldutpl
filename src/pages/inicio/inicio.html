@@ -1,11 +1,3 @@
-<ion-header>
-  	<ion-navbar>
-    	<ion-title>
-      		Recorridos
-    	</ion-title>
-  	</ion-navbar>
-</ion-header>
-
 <ion-content>
 	<ion-row #noDatos hidden>
 	  	<ion-col text-center>
@@ -38,25 +30,25 @@
 			<ion-col>
 				<button ion-button icon-left clear small>
 					<ion-icon name="map"></ion-icon>
-					<div>Ver en Mapa</div>
+					<div>Me gusta</div>
+				</button>
+			</ion-col>
+			<ion-col>
+				<button ion-button icon-left clear small>
+					<ion-icon name="text"></ion-icon>
+					<div>Comentar</div>
+				</button>
+			</ion-col>
+			<ion-col>
+				<button ion-button icon-left clear small>
+					<ion-icon name="star"></ion-icon>
+					<div>Favoritos</div>
 				</button>
 			</ion-col>
 			<ion-col>
 				<button ion-button icon-left clear small>
 					<ion-icon name="share-alt"></ion-icon>
 					<div>Compartir</div>
-				</button>
-			</ion-col>
-			<ion-col>
-				<button ion-button icon-left clear small>
-					<ion-icon name="create"></ion-icon>
-					<div>Editar</div>
-				</button>
-			</ion-col>
-			<ion-col>
-				<button ion-button icon-left clear small (click)="eliminar(item.idRecorrido)">
-					<ion-icon name="trash"></ion-icon>
-					<div>Eliminar</div>
 				</button>
 			</ion-col>
 		</ion-row>

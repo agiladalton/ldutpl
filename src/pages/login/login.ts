@@ -59,7 +59,7 @@ export class PaginaLogin {
 
                 if (typeof result.success !== 'undefined') {
                     if (result.success) {
-                        this.storageLocal.set('idPersonaLdutpl', result.data.idPersona);
+                        this.storageLocal.set('ID_PERSONA_LDUTPL', result.data.idPersona);
                         this.navCtrl.push(PaginaPrincipal);
                         this.mensajeInformativoEfecto(result.message);
                     } else {

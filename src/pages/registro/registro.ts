@@ -95,7 +95,7 @@ export class PaginaRegistro {
 		  				this.mensajeAlerta('Problema en la transacción.');
 		  			}
 		  		}, error => {
-		  			this.mensajeAlerta('Problema de conexión.');
+		  			this.mensajeAlerta(error);
 		  		});
   		} else {
   			this.mensajeInformativoEfecto("Por favor, llene todos los campos del formulario.");

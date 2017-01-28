@@ -1,17 +1,15 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 
-import { NavController } from 'ionic-angular';
-import { AlertController } from 'ionic-angular';
-import { ToastController } from 'ionic-angular';
+import { NavController, ToastController, AlertController } from 'ionic-angular';
 
-import { Geolocation } from 'ionic-native';
-import { SocialSharing } from 'ionic-native';
+import { Geolocation, SocialSharing } from 'ionic-native';
 
 import { Http, Headers, RequestOptions } from '@angular/http';
 
 import { PaginaNuevoRecorrido } from '../nuevorecorrido/nuevorecorrido';
 
 import { Storage } from '@ionic/storage';
+
 import { LocationTracker } from '../../providers/location-tracker';
 
 declare var google;
@@ -30,10 +28,10 @@ export class PaginaMapa {
   	marcadorPosicion: any;
   	intervalo: any;
   	estadoInicioRecorrido: any;
-  	SERVICIO_POSICION_RECORRIDO: any;
+  	SERVICIO_RECORRIDOS_POSICIONES: any;
   	storageLocal: any;
   	idRecorrido: any;
-  	idPersona: any;
+  	ID_PERSONA_LDUTPL: any;
 
   	constructor(
   		public navCtrl: NavController, 
@@ -47,12 +45,12 @@ export class PaginaMapa {
 		this.intervalo = 30;
 		this.estadoInicioRecorrido = false;
 
-		storage.get('SERVICIO_POSICION_RECORRIDO').then((val) => {
-	       this.SERVICIO_POSICION_RECORRIDO = val;
-		});
+		storage.get('SERVICIO_RECORRIDOS_POSICIONES').then((val) => {
+	       this.SERVICIO_RECORRIDOS_POSICIONES = val;
 
-		storage.get('idPersonaLdutpl').then((val) => {
-	       this.idPersona = val;
+	       storage.get('ID_PERSONA_LDUTPL').then((val) => {
+		       this.ID_PERSONA_LDUTPL = val;
+			});
 		});
   	}
 
@@ -145,9 +143,9 @@ export class PaginaMapa {
 		this.centrarMapa(latLng);
 		this.agregarMarcadorPersona(latLng);
 
-        let link = this.SERVICIO_POSICION_RECORRIDO + 'registro';
+        let link = this.SERVICIO_RECORRIDOS_POSICIONES + 'registro';
         let data = 'idRecorrido='+this.idRecorrido+'&'
-        	+ 'idPersona=' + this.idPersona + '&'
+        	+ 'idPersona=' + this.ID_PERSONA_LDUTPL + '&'
         	+ 'fechaHoraEquipo='+new Date().getTime()+ '&'
         	+ 'latitud='+latitud+'&'
         	+ 'longitud='+longitud+'&'
