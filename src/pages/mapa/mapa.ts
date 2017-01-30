@@ -55,7 +55,6 @@ export class PaginaMapa {
   	}
 
   	ngOnInit(){
-  		this.start();
 	    this.loadMap();
 	    this.establecerRecorrido(this.navParams.get('idRecorrido'));
 	}
@@ -123,20 +122,33 @@ export class PaginaMapa {
 		}
 	}
 
+	obtenerPrimeraPosicion() {
+		Geolocation.getCurrentPosition().then(resp => {
+			let altitud = -1, velocidad = -1;
+ 
+ 			if (resp.coords.altitude !== null) {
+ 				altitud = resp.coords.altitude;
+ 			}
+ 
+ 			if (resp.coords.speed !== null) {
+ 				velocidad = resp.coords.speed;
+ 			}
+
+			this.guardarPosicion(resp.coords.latitude, resp.coords.longitude, altitud, velocidad);
+			this.start();
+			this.iniciarRecorrido();
+		}).catch((error) => {
+			this.detenerRecorrido();
+			this.mensajeAlerta(error.message);
+		});
+	}
+
 	ubicarMiPosicion() {
-		let latitud = this.locationTracker.lat;
-		let longitud = this.locationTracker.lng;
+		this.guardarPosicion(this.locationTracker.lat, this.locationTracker.lng, -1, -1);
+	}
 
+	guardarPosicion(latitud, longitud, altitud, velocidad) {
 		let latLng = this.obtenerLatLng(latitud, longitud);
-		let altitud = -1, velocidad = -1;
-
-		/*if (pos.coords.altitude !== null) {
-			altitud = pos.coords.altitude;
-		}
-
-		if (pos.coords.speed !== null) {
-			velocidad = pos.coords.speed;
-		}*/
 
 		if (this.seguirPuntero) {
 			this.centrarMapa(latLng);
@@ -181,11 +193,10 @@ export class PaginaMapa {
 	establecerRecorrido(idRecorrido) {
 		this.idRecorrido = idRecorrido;
 
-		this.iniciarRecorrido();
+		this.obtenerPrimeraPosicion();
 	}
 
 	iniciarRecorrido() {
-		this.ubicarMiPosicion();
 		this.timerId = setInterval(() => {
 			this.ubicarMiPosicion();
 		}, 1000 * this.intervalo);
@@ -194,24 +205,28 @@ export class PaginaMapa {
 	}
 
 	detenerRecorrido() {
-		this.stop();
-		clearTimeout(this.timerId);		
+		if (this.estadoInicioRecorrido) {
+			this.stop();
+			clearTimeout(this.timerId);		
+			this.estadoInicioRecorrido = false;
+		}
 
 		this.bntDetener._elementRef.nativeElement.hidden = true;
 		this.bntContinuar._elementRef.nativeElement.hidden = false;
-		this.estadoInicioRecorrido = false;
 	}
 
 	continuarRecorrido() {
-		this.iniciarRecorrido();
+		this.obtenerPrimeraPosicion();
 
 		this.bntDetener._elementRef.nativeElement.hidden = false;
 		this.bntContinuar._elementRef.nativeElement.hidden = true;
 	}
 
 	finalizarRecorrido() {
-		this.stop();
-		clearTimeout(this.timerId);
+		if (this.estadoInicioRecorrido) {
+			this.stop();
+			clearTimeout(this.timerId);
+		}
 
 		this.navCtrl.push(PaginaPrincipal);
 	}
@@ -311,7 +326,7 @@ export class PaginaMapa {
 		        		this.stop();
 						clearTimeout(this.timerId);
 
-						this.iniciarRecorrido();
+						this.obtenerPrimeraPosicion();
 		        	}
 		        }
 			}]

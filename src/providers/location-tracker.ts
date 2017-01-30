@@ -58,8 +58,10 @@ export class LocationTracker {
 		 
 		    // Run update inside of Angular's zone
 		    this.zone.run(() => {
-		      this.lat = position.coords.latitude;
-		      this.lng = position.coords.longitude;
+		    	if (typeof position.coords !== 'undefined') {
+		    		this.lat = position.coords.latitude;
+		      		this.lng = position.coords.longitude;
+		    	}
 		    });
 		  });
 	}
