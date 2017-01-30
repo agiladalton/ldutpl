@@ -108,6 +108,32 @@ export class PaginaInicio {
 		this.appCtrl.getRootNav().push(PaginaRecorridoCrear);
 	}
 
+	guardarEmocion(idRecorrido) {
+		let link = this.SERVICIO_RECORRIDOS_EMOCIONES + 'registro';
+		let data = 'idRecorrido=' + idRecorrido
+			+ '&idPersona=' + this.ID_PERSONA_LDUTPL;
+
+		let headers = new Headers({
+			'Content-Type': 'application/x-www-form-urlencoded'
+		});
+
+		let options = new RequestOptions({
+			headers: headers
+		});
+
+		this.http.post(link, data, options).subscribe(response => {
+			let result = JSON.parse(response['_body']);
+
+			if (result.success) {
+				this.mensajeInformativoEfecto(result.message);
+			} else {
+				this.mensajeAlerta(result.message);
+			}
+		}, error => {
+			this.mensajeAlerta(error);
+		});
+	}
+
 	mensajeInformativoEfecto(mensaje) {
 		let toast = this.toastCtrl.create({
 			message: mensaje,

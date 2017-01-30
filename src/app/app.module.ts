@@ -65,7 +65,7 @@ export class AppModule {
 
   constructor(storage: Storage) {
     //VARIABLES CON RUTAS
-    this.SERVICIO_WEB = 'http://localhost:8080/ldutplrest/webresources/';
+    this.SERVICIO_WEB = 'http://karview.kradac.com:8080/ldutplrest/webresources/';
 
     this.SERVICIO_RECORRIDOS = this.SERVICIO_WEB + 'ec.edu.utpl.ldutpl.entidades.recorridos/';
     this.SERVICIO_RECORRIDOS_EMOCIONES = this.SERVICIO_WEB + 'ec.edu.utpl.ldutpl.entidades.recorridosemociones/';
