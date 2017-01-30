@@ -9,8 +9,11 @@ import { PaginaMapa } from '../pages/mapa/mapa';
 import { PaginaFavoritos } from '../pages/favoritos/favoritos';
 import { PaginaRecorridos } from '../pages/recorridos/recorridos';
 import { PaginaPerfil } from '../pages/perfil/perfil';
-import { PaginaNuevoRecorrido } from '../pages/nuevorecorrido/nuevorecorrido';
+import { PaginaRecorridoCrear } from '../pages/recorridocrear/recorridocrear';
+import { PaginaRecorridoEditar } from '../pages/recorridoeditar/recorridoeditar';
 import { PaginaInicio } from '../pages/inicio/inicio';
+
+import { SingletonService } from '../pages/servicios/singleton';
 
 import { Storage } from '@ionic/storage';
 import { LocationTracker } from '../providers/location-tracker';
@@ -25,7 +28,8 @@ import { LocationTracker } from '../providers/location-tracker';
     PaginaFavoritos,
     PaginaRecorridos,
     PaginaPerfil,
-    PaginaNuevoRecorrido,
+    PaginaRecorridoCrear,
+    PaginaRecorridoEditar,
     PaginaInicio
   ],
   imports: [
@@ -41,13 +45,14 @@ import { LocationTracker } from '../providers/location-tracker';
     PaginaFavoritos,
     PaginaRecorridos,
     PaginaPerfil,
-    PaginaNuevoRecorrido,
+    PaginaRecorridoCrear,
+    PaginaRecorridoEditar,
     PaginaInicio
   ],
   providers: [{
     provide: ErrorHandler, 
     useClass: IonicErrorHandler
-  }, Storage, LocationTracker]
+  }, Storage, LocationTracker, SingletonService]
 })
 
 export class AppModule {

@@ -2,12 +2,14 @@
 	<div #map id="map"></div>
 	<ion-fab right middle>
 		<button ion-fab mini (click)="cambiarIntervalo()"><ion-icon name="time"></ion-icon></button>
+		<button ion-fab mini (click)="seguirPunteroMapa()"><ion-icon name="navigate"></ion-icon></button>
 		<button ion-fab mini color="primary" (click)="compartirViaEmail()"><ion-icon name="share"></ion-icon></button>
-		<button ion-fab mini color="secondary" (click)="ubicarMiPosicion()"><ion-icon name="move"></ion-icon></button>
+		<button ion-fab mini color="secondary" (click)="ubicarMiPosicion()"><ion-icon name="pin"></ion-icon></button>
 	</ion-fab>
 </ion-content>
 
 <ion-footer>
-	<button #nuevo ion-button full (click)="nuevoRecorrido()">Nuevo Recorrido</button>
-	<button #finalizar ion-button full color="danger" hidden (click)="finalizarRecorrido()">Finalizar Recorrido</button>
+	<button #continuar ion-button full hidden (click)="continuarRecorrido()">Continuar Recorrido</button>
+	<button #detener ion-button full color="secondary" (click)="detenerRecorrido()">Detener Recorrido</button>
+	<button #finalizar ion-button full color="danger" (click)="finalizarRecorrido()">Finalizar Recorrido</button>
 </ion-footer>

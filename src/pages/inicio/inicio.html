@@ -1,4 +1,8 @@
 <ion-content>
+	<ion-fab bottom right>
+   		<button ion-fab (click)="nuevoRecorrido()">+</button>
+ 	</ion-fab>
+
 	<ion-row #noDatos hidden>
 	  	<ion-col text-center>
 	    	<b>No hay información que mostrar....</b><br>
@@ -18,8 +22,15 @@
 			<ion-avatar item-left>
 				<img src="img/recorrido.png">
 			</ion-avatar>
-			<h2>{{item.titulo}}</h2>
-			<p>{{item.recorridoTipo}} | {{item.fechaHoraRegistro}} ({{item.privacidad}})</p>
+			<h2>
+				<b>{{item.persona}}</b> compartio <b>{{item.titulo}}</b>
+			</h2>
+			<p>
+				{{item.recorridoTipo}} | {{item.fechaHoraRegistro}} ({{item.privacidad}})
+			</p>
+			<button ion-button clear small item-right>
+				<ion-icon name="arrow-dropdown"></ion-icon>
+			</button>
 		</ion-item>
 
 		<ion-card-content>
@@ -29,7 +40,7 @@
 		<ion-row>
 			<ion-col>
 				<button ion-button icon-left clear small>
-					<ion-icon name="map"></ion-icon>
+					<ion-icon name="thumbs-up"></ion-icon>
 					<div>Me gusta</div>
 				</button>
 			</ion-col>
@@ -41,14 +52,8 @@
 			</ion-col>
 			<ion-col>
 				<button ion-button icon-left clear small>
-					<ion-icon name="star"></ion-icon>
-					<div>Favoritos</div>
-				</button>
-			</ion-col>
-			<ion-col>
-				<button ion-button icon-left clear small>
-					<ion-icon name="share-alt"></ion-icon>
-					<div>Compartir</div>
+					<ion-icon name="map"></ion-icon>
+					<div>Ver en Mapa</div>
 				</button>
 			</ion-col>
 		</ion-row>

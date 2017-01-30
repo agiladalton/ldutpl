@@ -1,58 +1,76 @@
 import { Component } from '@angular/core';
 
-import { App, ViewController } from 'ionic-angular';
+import { App, NavController, ViewController, AlertController, ToastController, NavParams } from 'ionic-angular';
 
 import { Http, Headers, RequestOptions } from '@angular/http';
 
-import { AlertController } from 'ionic-angular';
-import { ToastController } from 'ionic-angular';
-
-import { PaginaMapa } from '../mapa/mapa';
 import { PaginaPrincipal } from '../principal/principal';
+
+import { SingletonService } from '../servicios/singleton';
 
 import { Storage } from '@ionic/storage';
 
 @Component({
-  selector: 'page-nuevorecorrido',
-  templateUrl: 'nuevorecorrido.html'
+  selector: 'page-recorridoeditar',
+  templateUrl: 'recorridoeditar.html'
 })
 
-export class PaginaNuevoRecorrido {
+export class PaginaRecorridoEditar {
 
-	idPersona: any;
 	idTipoRecorrido: any;
 	titulo: any;
 	descripcion: any;
 	esPublico: any;
 
-	storageLocal: any;
-	paginaMapa: any = PaginaMapa;
 	SERVICIO_RECORRIDOS: any;
 
 	constructor(
+		public navCtrl: NavController, 
 		public viewCtrl: ViewController,
 		private alertCtrl: AlertController,
 		public toastCtrl: ToastController,
 		public appCtrl: App,
 		public http: Http,
-		storage: Storage
+		public storage: Storage,
+		public navParams: NavParams,
+		public singleton: SingletonService
 	) {
-        this.storageLocal = storage;
-
         storage.get('SERVICIO_RECORRIDOS').then((val) => {
-	       this.SERVICIO_RECORRIDOS = val;
-		});
+	       	this.SERVICIO_RECORRIDOS = val;
 
-		storage.get('idPersonaLdutpl').then((val) => {
-	       this.idPersona = val;
+	       	this.cargar();
 		});
     }
 
-    iniciarRecorrido() {
-    	if (this.validar(this.idPersona) && this.validar(this.idTipoRecorrido) && this.validar(this.titulo) &&
+    cargar() {
+		let link = this.SERVICIO_RECORRIDOS + 'porRecorrido';
+        let data = 'idRecorrido=' + this.navParams.get('idRecorrido');
+
+        let headers = new Headers({
+			'Content-Type': 'application/x-www-form-urlencoded'
+		});
+
+		let options = new RequestOptions({
+			headers: headers
+		});
+        
+        this.http.post(link, data, options).subscribe(response => {
+			let result = JSON.parse(response['_body']);
+
+			this.idTipoRecorrido = result.idRecorridoTipo.idRecorridoTipo;
+			this.titulo = result.titulo;
+			this.descripcion = result.descripcion;
+			this.esPublico = result.esPublico;
+        }, error => {
+        	this.mensajeAlerta(error);
+        });
+    }
+
+    guardar() {
+    	if (this.validar(this.idTipoRecorrido) && this.validar(this.titulo) &&
   			this.validar(this.descripcion) && this.validar(this.esPublico)) {
-  			let link = this.SERVICIO_RECORRIDOS + 'registro';
-	        let data = 'idPersona=' + this.idPersona + '&'
+  			let link = this.SERVICIO_RECORRIDOS + 'editar';
+	        let data = 'idRecorrido=' + this.navParams.get('idRecorrido') + '&'
 	        	+ 'idTipoRecorrido=' + this.idTipoRecorrido + '&'
 	        	+ 'titulo=' + this.titulo + '&'
 	        	+ 'descripcion=' + this.descripcion + '&'
@@ -68,13 +86,16 @@ export class PaginaNuevoRecorrido {
 	        
 	        this.http.post(link, data, options).subscribe(response => {
 				let result = JSON.parse(response['_body']);
-				this.mensajeInformativoEfecto(result.message);
 
-				this.paginaMapa.prototype.establecerRecorrido(result.data.idRecorrido);
-		    	this.viewCtrl.dismiss();
-		      	this.appCtrl.getRootNav().push(PaginaPrincipal);
+				if (result.success) {
+					this.mensajeInformativoEfecto(result.message);
+			    	
+			      	this.navCtrl.push(PaginaPrincipal);
+				} else {
+					this.mensajeAlerta(result.message);	
+				}
 	        }, error => {
-	        	this.mensajeAlerta('Problema de conexión.');
+	        	this.mensajeAlerta(error);
 	        });
 		} else {
   			this.mensajeInformativoEfecto("Por favor, llene todos los campos del formulario.");

@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 
-import { NavController } from 'ionic-angular';
-import { ToastController } from 'ionic-angular';
-import { AlertController } from 'ionic-angular';
+import { NavController, ToastController, AlertController } from 'ionic-angular';
 
 import { PaginaRegistro } from '../registro/registro';
 import { PaginaPrincipal } from '../principal/principal';
 
 import { Http, Headers, RequestOptions } from '@angular/http';
+
+import { SingletonService } from '../servicios/singleton';
 
 import { Storage } from '@ionic/storage';
 
@@ -21,16 +21,15 @@ export class PaginaLogin {
     usuario: any;
     clave: any;
     SERVICIO_PERSONAS: any;
-    storageLocal: any;
 
     constructor(
         public navCtrl: NavController,
         public toastCtrl: ToastController,
         private alertCtrl: AlertController,
         public http: Http,
-        storage: Storage
+        public storage: Storage,
+        public singleton: SingletonService
     ) {
-        this.storageLocal = storage;
         storage.get('SERVICIO_PERSONAS').then((val) => {
            this.SERVICIO_PERSONAS = val;
         });
@@ -59,7 +58,8 @@ export class PaginaLogin {
 
                 if (typeof result.success !== 'undefined') {
                     if (result.success) {
-                        this.storageLocal.set('ID_PERSONA_LDUTPL', result.data.idPersona);
+                        this.singleton.loginState = true;
+                        this.storage.set('ID_PERSONA_LDUTPL', result.data.idPersona);
                         this.navCtrl.push(PaginaPrincipal);
                         this.mensajeInformativoEfecto(result.message);
                     } else {

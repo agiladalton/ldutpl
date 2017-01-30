@@ -1,10 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
 
-import { NavController, ToastController, AlertController } from 'ionic-angular';
+import { App, NavController, ToastController, AlertController, ActionSheetController, Platform } from 'ionic-angular';
 
 import { Storage } from '@ionic/storage';
 
 import { Http, Headers, RequestOptions } from '@angular/http';
+
+import { PaginaRecorridoEditar } from '../recorridoeditar/recorridoeditar';
 
 @Component({
   selector: 'page-recorridos',
@@ -26,21 +28,24 @@ export class PaginaRecorridos {
 		public toastCtrl: ToastController,
 		private alertCtrl: AlertController,
 		public storage: Storage,
-		public http: Http
+		public http: Http,
+		public actionSheetCtrl: ActionSheetController,
+		public platform: Platform,
+		public appCtrl: App
 	) {
 		storage.get('SERVICIO_RECORRIDOS').then((val) => {
-      this.SERVICIO_RECORRIDOS = val;
+      		this.SERVICIO_RECORRIDOS = val;
 
-      storage.get('ID_PERSONA_LDUTPL').then((val) => {
-        this.ID_PERSONA_LDUTPL = val;
+	      	storage.get('ID_PERSONA_LDUTPL').then((val) => {
+	        	this.ID_PERSONA_LDUTPL = val;
 
-        storage.get('SERVICIO_RECORRIDOS_EMOCIONES').then((val) => {
-       		this.SERVICIO_RECORRIDOS_EMOCIONES = val;
+	        	storage.get('SERVICIO_RECORRIDOS_EMOCIONES').then((val) => {
+	       			this.SERVICIO_RECORRIDOS_EMOCIONES = val;
 
-       		this.cargarRecorridos();
-        });
-      });
-	  });
+	       			this.cargarRecorridos();
+	        	});
+	      	});
+	  	});
 	}
 
 	cargarRecorridos() {
@@ -121,5 +126,33 @@ export class PaginaRecorridos {
 		});
 		alert.present();
 	}
+
+	opcionesRecorrido(idRecorrido) {
+    	let actionSheet = this.actionSheetCtrl.create({
+      		title: 'Opciones',
+      		buttons: [{
+				text: 'Editar',
+				icon: !this.platform.is('ios') ? 'create' : null,
+				handler: () => {
+		            this.appCtrl.getRootNav().push(PaginaRecorridoEditar, {
+		            	idRecorrido: idRecorrido
+		            });
+				}
+	        }, {
+	          	text: 'Eliminar',
+	          	role: 'destructive',
+	          	icon: !this.platform.is('ios') ? 'trash' : null,
+	          	handler: () => {
+	            	this.eliminar(idRecorrido);
+	            	this.cargarRecorridos();
+	          	}
+	        }, {
+	          	text: 'Cancelar',
+	          	icon: !this.platform.is('ios') ? 'close' : null
+			}]
+	    });
+
+    	actionSheet.present();
+  	}
 
 }

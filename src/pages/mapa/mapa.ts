@@ -1,12 +1,12 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 
-import { NavController, ToastController, AlertController } from 'ionic-angular';
+import { NavController, ViewController, ToastController, AlertController, NavParams } from 'ionic-angular';
 
 import { Geolocation, SocialSharing } from 'ionic-native';
 
 import { Http, Headers, RequestOptions } from '@angular/http';
 
-import { PaginaNuevoRecorrido } from '../nuevorecorrido/nuevorecorrido';
+import { PaginaPrincipal } from '../principal/principal';
 
 import { Storage } from '@ionic/storage';
 
@@ -21,45 +21,43 @@ declare var google;
 export class PaginaMapa {
 
 	@ViewChild('map') mapElement: ElementRef;
-	@ViewChild('nuevo') btnNuevo;
+	@ViewChild('continuar') bntContinuar;
+	@ViewChild('detener') bntDetener;
 	@ViewChild('finalizar') btnFinalizar;
   	map: any;
   	timerId: any;
   	marcadorPosicion: any;
-  	intervalo: any;
-  	estadoInicioRecorrido: any;
+  	intervalo: number = 30;
+  	seguirPuntero: boolean = true;
+  	estadoPrimeraPosicion: boolean = true;
+  	estadoInicioRecorrido: boolean = false;
   	SERVICIO_RECORRIDOS_POSICIONES: any;
-  	storageLocal: any;
   	idRecorrido: any;
   	ID_PERSONA_LDUTPL: any;
 
   	constructor(
   		public navCtrl: NavController, 
+  		public viewCtrl: ViewController,
   		private alertCtrl: AlertController,
   		public toastCtrl: ToastController,
   		public http: Http,
-  		storage: Storage,
-  		public locationTracker: LocationTracker
-	) {	
-		this.storageLocal = storage;
-		this.intervalo = 30;
-		this.estadoInicioRecorrido = false;
-
+  		public storage: Storage,
+  		public locationTracker: LocationTracker,
+  		public navParams: NavParams
+	) {
 		storage.get('SERVICIO_RECORRIDOS_POSICIONES').then((val) => {
-	       this.SERVICIO_RECORRIDOS_POSICIONES = val;
+	       	this.SERVICIO_RECORRIDOS_POSICIONES = val;
 
-	       storage.get('ID_PERSONA_LDUTPL').then((val) => {
+	       	storage.get('ID_PERSONA_LDUTPL').then((val) => {
 		       this.ID_PERSONA_LDUTPL = val;
 			});
 		});
   	}
 
   	ngOnInit(){
+  		this.start();
 	    this.loadMap();
-
-	    if (typeof this.idRecorrido !== 'undefined') {
-			this.iniciarRecorrido();
-		}
+	    this.establecerRecorrido(this.navParams.get('idRecorrido'));
 	}
 	 
 	loadMap(){	 
@@ -140,7 +138,10 @@ export class PaginaMapa {
 			velocidad = pos.coords.speed;
 		}*/
 
-		this.centrarMapa(latLng);
+		if (this.seguirPuntero) {
+			this.centrarMapa(latLng);
+		}
+
 		this.agregarMarcadorPersona(latLng);
 
         let link = this.SERVICIO_RECORRIDOS_POSICIONES + 'registro';
@@ -179,25 +180,40 @@ export class PaginaMapa {
 
 	establecerRecorrido(idRecorrido) {
 		this.idRecorrido = idRecorrido;
+
+		this.iniciarRecorrido();
 	}
 
 	iniciarRecorrido() {
-		//this.ubicarMiPosicion();
+		this.ubicarMiPosicion();
 		this.timerId = setInterval(() => {
 			this.ubicarMiPosicion();
 		}, 1000 * this.intervalo);
-
-		this.btnNuevo._elementRef.nativeElement.hidden = true;
-		this.btnFinalizar._elementRef.nativeElement.hidden = false;
+		
 		this.estadoInicioRecorrido = true;
+	}
+
+	detenerRecorrido() {
+		this.stop();
+		clearTimeout(this.timerId);		
+
+		this.bntDetener._elementRef.nativeElement.hidden = true;
+		this.bntContinuar._elementRef.nativeElement.hidden = false;
+		this.estadoInicioRecorrido = false;
+	}
+
+	continuarRecorrido() {
+		this.iniciarRecorrido();
+
+		this.bntDetener._elementRef.nativeElement.hidden = false;
+		this.bntContinuar._elementRef.nativeElement.hidden = true;
 	}
 
 	finalizarRecorrido() {
 		this.stop();
-		clearTimeout(this.timerId);		
-		this.btnNuevo._elementRef.nativeElement.hidden = false;
-		this.btnFinalizar._elementRef.nativeElement.hidden = true;
-		this.estadoInicioRecorrido = false;
+		clearTimeout(this.timerId);
+
+		this.navCtrl.push(PaginaPrincipal);
 	}
 
 	cambiarIntervalo() {
@@ -292,8 +308,10 @@ export class PaginaMapa {
 		        handler: data => {
 		        	this.intervalo = parseInt(data);
 		        	if (this.estadoInicioRecorrido) {
-		        		this.finalizarRecorrido();
-		        		//this.iniciarRecorrido();
+		        		this.stop();
+						clearTimeout(this.timerId);
+
+						this.iniciarRecorrido();
 		        	}
 		        }
 			}]
@@ -302,9 +320,40 @@ export class PaginaMapa {
 		alert.present();
 	}
 
-	nuevoRecorrido() {
-		this.start();
-		this.navCtrl.push(PaginaNuevoRecorrido);
+	seguirPunteroMapa() {
+		let estadoFalse = false, estadoTrue = false;
+
+		if (this.seguirPuntero) {
+			estadoTrue = true;
+		} else {
+			estadoFalse = true;
+		}
+
+		let alert = this.alertCtrl.create({
+	    	title: '¿Desea seguir el puntero?',
+	    	inputs: [{
+		        value: 'false',
+		        type: 'radio',
+		        label: 'No',
+		        checked: estadoFalse
+			}, {
+		        value: 'true',
+		        type: 'radio',
+		        label: 'Si',
+		        checked: estadoTrue
+			}],
+		    buttons: [{
+		        text: 'Cancelar',
+		        role: 'cancel'
+			}, {
+		        text: 'Guardar',
+		        handler: data => {
+		        	this.seguirPuntero = data === 'true';
+		        }
+			}]
+		});
+	  
+		alert.present();
 	}
 
 	compartirViaEmail() {
